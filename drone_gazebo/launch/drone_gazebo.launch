@@ -1,0 +1,32 @@
+﻿<launch>
+  <!-- We resume the logic in gazebo_ros package empty_world.launch, -->
+  <!-- changing only the name of the world to be launched -->
+
+<!--include file="$(find lle_control)/launch/lle_control.launch" /-->
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+   <!--arg name="world_name" value="worlds/empty.world"/-->
+    <arg name="paused" value="false"/>
+  
+
+  </include>
+
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <param name="robot_description"
+	 command="$(find xacro)/xacro.py '$(find drone_description)/urdf/drone.xacro'" />
+
+<node name="joint_state_publisher" pkg="joint_state_publisher"
+type="joint_state_publisher" ></node>
+
+<node pkg="robot_state_publisher" type="state_publisher"
+name="robot_state_publisher" output="screen" >
+<param name="publish_frequency" type="double" value="50.0" />
+</node>
+
+   <!-- Spawn lle into Gazebo -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+     args="-param robot_description -urdf -model drone -z 0"/>
+
+<!--node name="lle_walker" pkg="lle_gazebo" type="walker.py" /-->
+
+</launch>
